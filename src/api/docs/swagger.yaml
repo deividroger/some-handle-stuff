@@ -1,0 +1,153 @@
+basePath: /
+definitions:
+  internal_adapters_inbound_httpapi.CreateTaskRequest:
+    properties:
+      title:
+        example: Escrever testes
+        type: string
+    type: object
+  some-handle-stuff_internal_core_domain.Task:
+    properties:
+      done:
+        type: boolean
+      id:
+        type: string
+      title:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API de tarefas construída com arquitetura ports and adapters.
+  title: Tasks API
+  version: "1.0"
+paths:
+  /healthz:
+    get:
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Health check
+      tags:
+      - health
+  /tasks:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/some-handle-stuff_internal_core_domain.Task'
+            type: array
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: List tasks
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Task to create
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/internal_adapters_inbound_httpapi.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/some-handle-stuff_internal_core_domain.Task'
+        "400":
+          description: invalid request
+          schema:
+            type: string
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: Create a task
+      tags:
+      - tasks
+  /tasks/{id}:
+    delete:
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: task not found
+          schema:
+            type: string
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: Delete a task
+      tags:
+      - tasks
+    get:
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/some-handle-stuff_internal_core_domain.Task'
+        "404":
+          description: task not found
+          schema:
+            type: string
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: Get a task by ID
+      tags:
+      - tasks
+  /tasks/{id}/complete:
+    post:
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/some-handle-stuff_internal_core_domain.Task'
+        "404":
+          description: task not found
+          schema:
+            type: string
+        "500":
+          description: internal error
+          schema:
+            type: string
+      summary: Mark a task as done
+      tags:
+      - tasks
+swagger: "2.0"
